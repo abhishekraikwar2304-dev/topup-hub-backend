@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TopUp Hub – Instant Game Recharge & Free Coins</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0b0e14;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1f293d;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #a855f7;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-auth {
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            color: #fff;
+            font-weight: bold;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: #fff;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .admin-btn {
+            background: #38bdf8;
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .coins-badge {
+            background: #1e1b4b;
+            border: 1px solid #6366f1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: #facc15;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #4c1d95, #1e1b4b);
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .hero-banner h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #facc15;
+        }
+
+        /* EARN COINS SECTION */
+        .earn-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .earn-box {
+            background: #161b26;
+            border: 1px dashed #facc15;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* CANVAS SPIN WHEEL STYLING */
+        .wheel-wrapper {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 10px 0;
+        }
+
+        #wheelCanvas {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 4px solid #facc15;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);
+            transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1);
+        }
+
+        .wheel-arrow {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 18px solid #ef4444;
+            z-index: 10;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 10px;
+            color: #cbd5e1;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .game-card {
+            background: #161b26;
+            border: 1px solid #232d3f;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .game-card:hover {
+            border-color: #a855f7;
+            background: #1f2738;
+        }
+
+        /* Checkout Box */
+        .checkout-box {
+            background: #161b26;
+            border: 1px solid #a855f7;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #0b0e14;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: #8b5cf6;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        .btn-coins {
+            background: linear-gradient(135deg, #eab308, #ca8a04);
+        }
+
+        /* Star Rating CSS */
+        .star-rating {
+            font-size: 30px;
+            cursor: pointer;
+            color: #475569;
+            margin: 10px 0;
+        }
+
+        .star-rating span:hover,
+        .star-rating span.active {
+            color: #facc15;
+        }
+
+        /* Reviews Box */
+        .reviews-section {
+            background: #161b26;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 25px;
+        }
+
+        .review-card {
+            background: #0b0e14;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 13px;
+            border-left: 3px solid #facc15;
+        }
+
+        /* General Modal Popups */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: #161b26;
+            border: 1px solid #a855f7;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            width: 90%;
+            max-width: 380px;
+        }
+
+        .qr-code {
+            margin: 15px 0;
+            border: 4px solid #fff;
+            border-radius: 8px;
+        }
+
+        /* PREMIUM GLASSMORPHISM AUTH MODAL STYLING */
+        #authModal {
+            backdrop-filter: blur(8px);
+            background: rgba(5, 7, 12, 0.85);
+        }
+
+        .auth-card {
+            background: linear-gradient(145deg, rgba(22, 27, 38, 0.95), rgba(15, 23, 42, 0.98));
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 20px;
+            padding: 30px 25px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 35px rgba(168, 85, 247, 0.25), inset 0 0 15px rgba(250, 204, 21, 0.05);
+            position: relative;
+            text-align: center;
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .auth-card .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .auth-card .close-btn:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .auth-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid #a855f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .auth-title {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .auth-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .auth-input-group {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .auth-input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 42px;
+            background: rgba(11, 14, 20, 0.8);
+            border: 1px solid #2e3748;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .auth-input-group input:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+            background: rgba(11, 14, 20, 1);
+        }
+
+        .auth-input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .auth-btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #8b5cf6, #d946ef);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 5px;
+        }
+
+        .auth-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+        }
+
+        .auth-toggle {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        .auth-toggle a {
+            color: #facc15;
+            font-weight: bold;
+            text-decoration: none;
+            margin-left: 4px;
+            transition: 0.2s;
+        }
+
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">⚡ TopUp Hub</div>
+        <div class="header-actions">
+            {% if user %}
+            <div class="coins-badge">🪙 <span id="coinCount">{{ user.coins }}</span> Coins</div>
+            <span style="font-size: 13px; color: #a855f7;">👤 <span id="currentUsername">{{ user.username
+                    }}</span></span>
+            <a href="/logout" class="btn-logout">Logout</a>
+            {% else %}
+            <button class="btn-auth" onclick="openAuthModal()">Login / Sign Up</button>
+            {% endif %}
+            <a href="/admin-dashboard-secret" class="admin-btn">👑 Admin</a>
+        </div>
+    </div>
+
+    <div class="hero-banner">
+        <h2>INSTANT TOP-UP DISCOUNTS</h2>
+        <p style="font-size: 13px; color: #e2e8f0;">Free Fire Diamonds & Game Credits 3 Sec Delivery</p>
+    </div>
+
+    <!-- EARN FREE COINS SECTION -->
+    <div class="section-title">🎁 Earn Free Coins (सिक्के और डायमंड कमाओ)</div>
+    <div class="earn-container">
+
+        <!-- Spin & Win Box (Graphical Wheel) -->
+        <div class="earn-box">
+            <h5 style="color: #facc15;">Spin & Win</h5>
+            <div class="wheel-wrapper">
+                <div class="wheel-arrow"></div>
+                <canvas id="wheelCanvas" width="200" height="200"></canvas>
+            </div>
+            <button class="btn-submit btn-coins" style="padding: 8px; font-size: 13px;"
+                onclick="handleSpinRequest()">Spin Wheel</button>
+        </div>
+
+        <!-- Watch Ads Box -->
+        <div class="earn-box">
+            <h5 style="color: #38bdf8;">Watch Ad</h5>
+            <div style="font-size: 50px; margin: 10px 0;">📺</div>
+            <button class="btn-submit" style="background: #0284c7; padding: 8px; font-size: 13px;"
+                onclick="watchAd('normal')">Watch (+20 Coins)</button>
+        </div>
+
+        <!-- Daily Bonus Box -->
+        <div class="earn-box">
+            <h5 style="color: #22c55e;">Daily Bonus</h5>
+            <div style="font-size: 50px; margin: 10px 0;">📅</div>
+            <button class="btn-submit" style="background: #16a34a; padding: 8px; font-size: 13px;"
+                onclick="claimDaily()">Claim (+30)</button>
+        </div>
+    </div>
+
+    <div class="section-title">Select Game</div>
+    <div class="game-grid">
+        <div class="game-card" onclick="selectGame('Free Fire')">
+            <div style="font-size: 35px;">🔥</div>
+            <h3>Free Fire</h3>
+        </div>
+        <div class="game-card" onclick="selectGame('BGMI')">
+            <div style="font-size: 35px;">🪖</div>
+            <h3>BGMI</h3>
+        </div>
+    </div>
+
+    <!-- Checkout Box -->
+    <div id="checkout" class="checkout-box">
+        <h3 id="selected-game-title" style="color: #a855f7; margin-bottom: 10px;">Game Top-Up</h3>
+        <input type="text" id="player_uid" class="input-field" placeholder="अपनी Player UID डालें">
+        <select id="pack_select" class="input-field">
+            <option value="100 Diamonds|79">100 Diamonds (₹79 या 790 कॉइन्स)</option>
+            <option value="310 Diamonds|240">310 Diamonds (₹240 या 2400 कॉइन्स)</option>
+            <option value="520 Diamonds|400">520 Diamonds (₹400 या 4000 कॉइन्स)</option>
+        </select>
+
+        <button class="btn-submit" onclick="openUPIPay()">Proceed to Pay (UPI)</button>
+        <button class="btn-submit btn-coins" onclick="payWithCoins()">🪙 Buy with Wallet Coins</button>
+    </div>
+
+    <!-- User Ratings & Reviews Section -->
+    <div class="reviews-section">
+        <h4 style="color: #facc15;">⭐ Gamers Reviews & Ratings</h4>
+        {% if reviews %}
+        {% for r in reviews %}
+        <div class="review-card">
+            <strong style="color: #38bdf8;">{{ r.username }}</strong>
+            <span style="color: #facc15;">
+                {% for i in range(r.rating) %}★{% endfor %}
+            </span>
+            <p style="color: #cbd5e1; margin-top: 3px;">"{{ r.comment }}"</p>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="font-size: 12px; color: #94a3b8; margin-top: 5px;">अभी कोई रिव्यू नहीं है। पहला टॉप-अप करके स्टार
+            रेटिंग दें!</p>
+        {% endif %}
+    </div>
+
+    <!-- POPUP 1: LUXURY WINNING REWARD POPUP -->
+    <div id="rewardWinModal" class="modal">
+        <div class="modal-content" style="border-color: #facc15; background: #0f172a; text-align: center;">
+            <div style="font-size: 60px; margin-bottom: 5px;">🎉</div>
+            <h2 style="color: #facc15; font-size: 22px;">Congratulations!</h2>
+            <p id="rewardWinText" style="color: #fff; font-size: 16px; margin: 15px 0; font-weight: bold;"></p>
+            <button class="btn-submit btn-coins" onclick="closeRewardWinModal()">Claim Reward</button>
+        </div>
+    </div>
+
+    <!-- POPUP 2: EXTRA SPIN VIA VIDEO AD POPUP -->
+    <div id="extraSpinModal" class="modal">
+        <div class="modal-content" style="border-color: #38bdf8;">
+            <div style="font-size: 50px;">⏳</div>
+            <h3 style="color: #38bdf8; margin-top: 5px;">आज का फ्री स्पिन पूरा हुआ!</h3>
+            <p style="font-size: 13px; color: #cbd5e1; margin: 12px 0;">दुबारा स्पिन करने के लिए 1 छोटा वीडियो ऐड देखें
+                और +1 एक्स्ट्रा स्पिन पाएं!</p>
+            <button class="btn-submit" style="background: #0284c7;" onclick="watchAdForExtraSpin()">📺 Watch Video Ad to
+                Spin</button>
+            <button class="btn-submit" style="background: #64748b; margin-top: 8px;" onclick="closeExtraSpinModal()">बाद
+                में (Cancel)</button>
+        </div>
+    </div>
+
+    <!-- PREMIUM LOGIN / SIGN UP MODAL -->
+    <div id="authModal" class="modal">
+        <div class="auth-card">
+            <button class="close-btn" onclick="closeAuthModal()">✕</button>
+            <div class="auth-icon">👑</div>
+            <h3 id="authTitle" class="auth-title">Welcome Back</h3>
+            <p id="authSubtitle" class="auth-subtitle">लॉग इन करें और फ्री डायमंड्स व कॉइन्स पाएं!</p>
+
+            <div id="usernameGroup" class="auth-input-group" style="display: none;">
+                <span class="auth-input-icon">👤</span>
+                <input type="text" id="auth_username" placeholder="आपका पूरा नाम (Name)">
+            </div>
+
+            <div class="auth-input-group">
+                <span class="auth-input-icon">✉️</span>
+                <input type="email" id="auth_email" placeholder="ईमेल आईडी (Email)">
+            </div>
+
+            <div class="auth-input-group">
+                <span class="auth-input-icon">🔒</span>
+                <input type="password" id="auth_password" placeholder="पासवर्ड (Password)">
+            </div>
+
+            <button id="authBtn" class="auth-btn-primary" onclick="handleAuth()">Login Now</button>
+
+            <p class="auth-toggle">
+                <span id="authToggleText">खाता नहीं है?</span>
+                <a href="#" id="authToggleLink" onclick="toggleAuthMode()">Sign Up करें (+50 Coins)</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- UPI QR Modal -->
+    <div id="upiModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color: #facc15;">Scan & Pay via UPI</h3>
+            <p id="amountText" style="margin: 8px 0; font-size: 14px; color: #38bdf8;"></p>
+            <img id="qrImg" src="" alt="UPI QR" class="qr-code" width="200">
+            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">PhonePe, Paytm, Google Pay सपोर्टेड</p>
+            <button class="btn-submit" style="background: #22c55e;" onclick="submitOrder('UPI')">पेमेंट पूरा कर दिया
+                (Submit Order)</button>
+            <button class="btn-submit" style="background: #ef4444;" onclick="closeModal()">रद्द करें</button>
+        </div>
+    </div>
+
+    <!-- Video Ad Simulation Modal -->
+    <div id="adModal" class="modal">
+        <div class="modal-content" style="border-color: #38bdf8;">
+            <h3 style="color: #38bdf8; margin-bottom: 10px;">📺 Video Ad Playing</h3>
+            <div style="background: #000; padding: 40px; border-radius: 8px; margin: 15px 0;">
+                <p style="color: #facc15; font-weight: bold;">[ Sponsored Ad Active ]</p>
+                <p style="font-size: 12px; color: #94a3b8; margin-top: 8px;">समय बचा: <span id="adTimer">5</span>s</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANDATORY RATING & REVIEW MODAL POPUP -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content" style="border-color: #facc15;">
+            <h3 style="color: #facc15;">⭐ Rate Our App</h3>
+            <p style="font-size: 13px; color: #cbd5e1; margin-top: 5px;">ऑर्डर प्रोसेस हो रहा है! कृपया हमारे ऐप को
+                5-स्टार रेटिंग दें:</p>
+            <div class="star-rating" id="starContainer">
+                <span onclick="setRating(1)">★</span>
+                <span onclick="setRating(2)">★</span>
+                <span onclick="setRating(3)">★</span>
+                <span onclick="setRating(4)">★</span>
+                <span onclick="setRating(5)" class="active">★</span>
+            </div>
+            <input type="text" id="review_comment" class="input-field"
+                placeholder="अपना अनुभव लिखें (उदा: Fast Delivery Best App)">
+            <button class="btn-submit" style="background: linear-gradient(135deg, #eab308, #ca8a04);"
+                onclick="submitReviewAndFinish()">
+                Submit Review & Complete (+10 Coins)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const isLoggedIn = {% if user %} true {% else %} false {% endif %};
+        let currentGame = "";
+        let currentPrice = 79;
+        let currentPack = "";
+        let isSignUpMode = false;
+        let selectedRating = 5;
+        let adPurpose = 'normal'; // 'normal' or 'spin'
+        const myUpiId = "6266766461@ybl";
+
+        /* ---------------- CANVAS WHEEL SETUP ---------------- */
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const segments = [
+            { label: '10 Coins', color: '#8b5cf6' },
+            { label: '💎 1 Dia', color: '#0284c7' },
+            { label: '20 Coins', color: '#16a34a' },
+            { label: '💎 5 Dia', color: '#facc15' },
+            { label: '30 Coins', color: '#d97706' },
+            { label: 'Try Again', color: '#ef4444' },
+            { label: '50 Coins', color: '#ec4899' },
+            { label: '💎 10 Dia', color: '#38bdf8' }
+        ];
+
+        function drawWheel() {
+            const numSegments = segments.length;
+            const arcSize = (2 * Math.PI) / numSegments;
+            for (let i = 0; i < numSegments; i++) {
+                ctx.beginPath();
+                ctx.fillStyle = segments[i].color;
+                ctx.moveTo(100, 100);
+                ctx.arc(100, 100, 100, i * arcSize, (i + 1) * arcSize);
+                ctx.fill();
+
+                // Draw Text
+                ctx.save();
+                ctx.translate(100, 100);
+                ctx.rotate(i * arcSize + arcSize / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 11px sans-serif";
+                ctx.fillText(segments[i].label, 90, 4);
+                ctx.restore();
+            }
+        }
+        drawWheel();
+
+        /* ---------------- SPIN WHEEL LOGIC ---------------- */
+        let currentRotation = 0;
+
+        function handleSpinRequest() {
+            if (!isLoggedIn) {
+                openAuthModal();
+                return;
+            }
+            fetch('/api/check-spin-eligibility', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.can_spin) {
+                        executeSpin();
+                    } else {
+                        document.getElementById('extraSpinModal').style.display = 'flex';
+                    }
+                });
+        }
+
+        function watchAdForExtraSpin() {
+            closeExtraSpinModal();
+            watchAd('spin');
+        }
+
+        function executeSpin() {
+            fetch('/api/spin-wheel', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Random 5 to 8 rotations
+                        const extraRotation = 1800 + Math.floor(Math.random() * 360);
+                        currentRotation += extraRotation;
+                        canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+                        setTimeout(() => {
+                            document.getElementById('rewardWinText').innerText = data.reward_text;
+                            document.getElementById('rewardWinModal').style.display = 'flex';
+                            if (document.getElementById('coinCount')) {
+                                document.getElementById('coinCount').innerText = data.new_total;
+                            }
+                        }, 4000);
+                    } else {
+                        alert(data.message);
+                        openAuthModal();
+                    }
+                });
+        }
+
+        function closeRewardWinModal() {
+            document.getElementById('rewardWinModal').style.display = 'none';
+        }
+        function closeExtraSpinModal() {
+            document.getElementById('extraSpinModal').style.display = 'none';
+        }
+
+        /* ---------------- WATCH ADS ---------------- */
+        function watchAd(purpose = 'normal') {
+            if (!isLoggedIn) {
+                openAuthModal();
+                return;
+            }
+            adPurpose = purpose;
+            document.getElementById('adModal').style.display = 'flex';
+            let timeLeft = 5;
+            const interval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('adTimer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    document.getElementById('adModal').style.display = 'none';
+
+                    if (adPurpose === 'spin') {
+                        executeSpin();
+                    } else {
+                        fetch('/api/watch-ad', { method: 'POST' })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    document.getElementById('rewardWinText').innerText = "आपने वीडियो देखने पर +20 सिक्के जीते!";
+                                    document.getElementById('rewardWinModal').style.display = 'flex';
+                                    document.getElementById('coinCount').innerText = data.new_total;
+                                } else { alert(data.message); openAuthModal(); }
+                            });
+                    }
+                }
+            }, 1000);
+        }
+
+        /* Daily Claim */
+        function claimDaily() {
+            if (!isLoggedIn) {
+                openAuthModal();
+                return;
+            }
+            fetch('/api/daily-claim', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('rewardWinText').innerText = "डेली बोनस: +30 सिक्के आपके खाते में जोड़े गए!";
+                        document.getElementById('rewardWinModal').style.display = 'flex';
+                        document.getElementById('coinCount').innerText = data.new_total;
+                    } else { alert(data.message); openAuthModal(); }
+                });
+        }
+
+        /* Game & Rating Logic */
+        function selectGame(gameName) {
+            currentGame = gameName;
+            document.getElementById('selected-game-title').innerText = gameName + " Top-Up";
+            const checkoutBox = document.getElementById('checkout');
+            checkoutBox.style.display = 'block';
+            checkoutBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setRating(stars) {
+            selectedRating = stars;
+            const spans = document.querySelectorAll('#starContainer span');
+            spans.forEach((span, idx) => {
+                if (idx < stars) span.classList.add('active');
+                else span.classList.remove('active');
+            });
+        }
+
+        function submitReviewAndFinish() {
+            const comment = document.getElementById('review_comment').value || "Best Topup App!";
+            const userSpan = document.getElementById('currentUsername');
+            const username = userSpan ? userSpan.innerText : "Anonymous Gamer";
+
+            fetch('/api/submit-review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, rating: selectedRating, comment })
+            }).then(() => location.reload());
+        }
+
+        /* Auth Modals */
+        function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+        function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                document.getElementById('authTitle').innerText = "Create Account";
+                document.getElementById('authSubtitle').innerText = "साइन-अप करें और तुरंत 50 फ्री कॉइन्स पाएं!";
+                document.getElementById('usernameGroup').style.display = 'block';
+                document.getElementById('authBtn').innerText = "Sign Up (+50 Coins)";
+                document.getElementById('authToggleText').innerText = "पहले से खाता है?";
+                document.getElementById('authToggleLink').innerText = "Login करें";
+            } else {
+                document.getElementById('authTitle').innerText = "Welcome Back";
+                document.getElementById('authSubtitle').innerText = "लॉग इन करें और फ्री डायमंड्स व कॉइन्स पाएं!";
+                document.getElementById('usernameGroup').style.display = 'none';
+                document.getElementById('authBtn').innerText = "Login Now";
+                document.getElementById('authToggleText').innerText = "खाता नहीं है?";
+                document.getElementById('authToggleLink').innerText = "Sign Up करें (+50 Coins)";
+            }
+        }
+
+        function handleAuth() {
+            const email = document.getElementById('auth_email').value;
+            const password = document.getElementById('auth_password').value;
+            const username = document.getElementById('auth_username').value;
+            const endpoint = isSignUpMode ? '/api/signup' : '/api/login';
+            const payload = isSignUpMode ? { username, email, password } : { email, password };
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(res => res.json()).then(data => {
+                alert(data.message);
+                if (data.status === 'success') location.reload();
+            });
+        }
+
+        /* Payment Order Submit */
+        function openUPIPay() {
+            if (!isLoggedIn) {
+                openAuthModal();
+                return;
+            }
+            const uid = document.getElementById('player_uid').value;
+            const packData = document.getElementById('pack_select').value.split('|');
+            currentPack = packData[0]; currentPrice = packData[1];
+            if (!uid) { alert("अपनी Player UID दर्ज करें!"); return; }
+
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${myUpiId}%26pn=TopUpHub%26am=${currentPrice}%26cu=INR`;
+            document.getElementById('qrImg').src = qrUrl;
+            document.getElementById('amountText').innerText = `Amount: ₹${currentPrice} (${currentPack})`;
+            document.getElementById('upiModal').style.display = 'flex';
+        }
+
+        function payWithCoins() {
+            if (!isLoggedIn) {
+                openAuthModal();
+                return;
+            }
+            const uid = document.getElementById('player_uid').value;
+            const packData = document.getElementById('pack_select').value.split('|');
+            currentPack = packData[0]; currentPrice = packData[1];
+            if (!uid) { alert("अपनी Player UID दर्ज करें!"); return; }
+            submitOrder('COINS');
+        }
+
+        function closeModal() { document.getElementById('upiModal').style.display = 'none'; }
+
+        function submitOrder(payMethod = 'UPI') {
+            const uid = document.getElementById('player_uid').value;
+            fetch('/api/place-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ player_uid: uid, game_title: currentGame, pack_name: currentPack, price: parseInt(currentPrice), payment_method: payMethod })
+            }).then(res => res.json()).then(data => {
+                if (data.status === 'success') {
+                    closeModal();
+                    document.getElementById('ratingModal').style.display = 'flex';
+                } else { alert(data.message); }
+            });
+        }
+    </script>
+</body>
+
+</html>
